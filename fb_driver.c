@@ -18,17 +18,17 @@ void fb_write_cell(unsigned short i, char c, unsigned char fg, unsigned char bg)
 }
 
 /** fb_scroll_lines:
-*  Scroll n lines of the framebuffer.
-*
-*  @param n The number of lines to scroll
-*/
+ *  Scroll n lines of the framebuffer.
+ *
+ *  @param n The number of lines to scroll
+ */
 int fb_scroll_lines(unsigned short n)
 {
-    if (n >= 25) return -1;
+    if (n >= FB_ROW_NUM) return -1;
     unsigned short i;
     unsigned short *fb = (unsigned short *) 0x00b8000;
-    unsigned short total_len = 25 * 80;
-    unsigned short shift_len = n * 80;
+    unsigned short total_len = FB_ROW_NUM * FB_COLOMN_NUM;
+    unsigned short shift_len = n * FB_COLOMN_NUM;
     unsigned short content_len = total_len - shift_len;
 
     for (i = 0; i < content_len; ++i)
@@ -44,10 +44,10 @@ int fb_scroll_lines(unsigned short n)
 }
 
 /** fb_move_cursor:
-*  Moves the cursor of the framebuffer to the given position
-*
-*  @param pos The new position of the cursor
-*/
+ *  Moves the cursor of the framebuffer to the given position
+ *
+ *  @param pos The new position of the cursor
+ */
 void fb_move_cursor(unsigned short pos)
 {
     outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
@@ -71,7 +71,7 @@ int fb_write(char *buf, unsigned int len)
     fb_move_cursor(0);
     for (i = 0, j = 0; i < len; ++i)
     {
-        if (j < (25 * 80 - 1))
+        if (j < (FB_ROW_NUM * FB_COLOMN_NUM - 1))
         {
             fb_write_cell(j, buf[i], FB_GREEN, FB_DARK_GREY);
             ++j;
@@ -80,7 +80,7 @@ int fb_write(char *buf, unsigned int len)
         else
         {
             fb_scroll_lines(1);
-            j -= 80;
+            j -= FB_COLOMN_NUM;
             fb_move_cursor(j);
             fb_write_cell(j, buf[i], FB_GREEN, FB_DARK_GREY);
             ++j;
