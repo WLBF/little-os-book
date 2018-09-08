@@ -118,11 +118,7 @@ int serial_write(char *buf, unsigned int len)
     serial_configure_modem(SERIAL_COM1_BASE);
 
     /* spinning until transmit FIFO queue is empty */
-    for (;;)
-    {
-        if (serial_is_transmit_fifo_empty(SERIAL_COM1_BASE))
-            break;
-    }
+    while (!serial_is_transmit_fifo_empty(SERIAL_COM1_BASE));
 
     for (i = 0, j = 0; i < len; ++i)
     {
