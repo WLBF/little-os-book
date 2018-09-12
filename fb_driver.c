@@ -10,7 +10,7 @@
  *  @param fg The foreground color
  *  @param bg The background color
  */
-void fb_write_cell(unsigned short i, char c, unsigned char fg, unsigned char bg)
+void fb_write_cell(uint16_t i, char c, uint8_t fg, uint8_t bg)
 {
     char *fb = (char *) 0x000B8000;
     fb[2 * i] = c;
@@ -22,14 +22,14 @@ void fb_write_cell(unsigned short i, char c, unsigned char fg, unsigned char bg)
  *
  *  @param n The number of lines to scroll
  */
-int fb_scroll_lines(unsigned short n)
+int32_t fb_scroll_lines(uint16_t n)
 {
     if (n >= FB_ROW_NUM) return -1;
-    unsigned short i;
-    unsigned short *fb = (unsigned short *) 0x00b8000;
-    unsigned short total_len = FB_ROW_NUM * FB_COLOMN_NUM;
-    unsigned short shift_len = n * FB_COLOMN_NUM;
-    unsigned short content_len = total_len - shift_len;
+    uint16_t i;
+    uint16_t *fb = (uint16_t *) 0x00b8000;
+    uint16_t total_len = FB_ROW_NUM * FB_COLOMN_NUM;
+    uint16_t shift_len = n * FB_COLOMN_NUM;
+    uint16_t content_len = total_len - shift_len;
 
     for (i = 0; i < content_len; ++i)
     {
@@ -48,7 +48,7 @@ int fb_scroll_lines(unsigned short n)
  *
  *  @param pos The new position of the cursor
  */
-void fb_move_cursor(unsigned short pos)
+void fb_move_cursor(uint16_t pos)
 {
     outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
     outb(FB_DATA_PORT,    ((pos >> 8) & 0x00FF));
@@ -64,9 +64,9 @@ void fb_move_cursor(unsigned short pos)
  *  @param buf The content to write
  *  @param len The length of the content
  */
-int fb_write(char *buf, unsigned int len)
+int32_t fb_write(char *buf, uint32_t len)
 {
-    unsigned short i, j;
+    uint16_t i, j;
 
     fb_move_cursor(0);
     for (i = 0, j = 0; i < len; ++i)

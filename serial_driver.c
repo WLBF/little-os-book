@@ -32,7 +32,7 @@
  *  @param com      The COM port to configure
  *  @param divisor  The divisor
  */
-void serial_configure_baud_rate(unsigned short com, unsigned short divisor)
+void serial_configure_baud_rate(uint16_t com, uint16_t divisor)
 {
     outb(SERIAL_LINE_COMMAND_PORT(com),
             SERIAL_LINE_ENABLE_DLAB);
@@ -49,7 +49,7 @@ void serial_configure_baud_rate(unsigned short com, unsigned short divisor)
  *
  *  @param com  The serial port to configure
  */
-void serial_configure_line(unsigned short com)
+void serial_configure_line(uint16_t com)
 {
     /* Bit:     | 7 | 6 | 5 4 3 | 2 | 1 0 |
      * Content: | d | b | prty  | s | dl  |
@@ -65,7 +65,7 @@ void serial_configure_line(unsigned short com)
  *
  *  @param com  The serial port to configure
  */
-void serial_configure_buffers(unsigned short com)
+void serial_configure_buffers(uint16_t com)
 {
     /* Bit:     | 7 6 | 5  | 4 | 3   | 2   | 1   | 0 |
      * Content: | lvl | bs | r | dma | clt | clr | e |
@@ -80,7 +80,7 @@ void serial_configure_buffers(unsigned short com)
  *
  *  @param com  The serial port to configure
  */
-void serial_configure_modem(unsigned short com)
+void serial_configure_modem(uint16_t com)
 {
     /* Bit:     | 7 | 6 | 5  | 4  | 3   | 2   | 1   | 0   |
      * Content: | r | r | af | lb | ao2 | ao1 | rts | dtr |
@@ -97,7 +97,7 @@ void serial_configure_modem(unsigned short com)
  *  @return 0 if the transmit FIFO queue is not empty
  *          1 if the transmit FIFO queue is empty
  */
-int serial_is_transmit_fifo_empty(unsigned int com)
+int32_t serial_is_transmit_fifo_empty(uint32_t com)
 {
     /* 0x20 = 0010 0000 */
     return inb(SERIAL_LINE_STATUS_PORT(com)) & 0x20;
@@ -109,9 +109,9 @@ int serial_is_transmit_fifo_empty(unsigned int com)
  *  @param buf The content to write
  *  @param len The length of the content
  */
-int serial_write(char *buf, unsigned int len)
+int32_t serial_write(char *buf, uint32_t len)
 {
-    unsigned int i, j;
+    uint32_t i, j;
     serial_configure_baud_rate(SERIAL_COM1_BASE, 2);
     serial_configure_line(SERIAL_COM1_BASE);
     serial_configure_buffers(SERIAL_COM1_BASE);

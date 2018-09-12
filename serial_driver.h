@@ -1,6 +1,8 @@
 #ifndef INCLUDE_SERIAL_DRIVER_H
 #define INCLUDE_SERIAL_DRIVER_H
 
+#include "common.h"
+
 /* The I/O ports */
 
 /* All the I/O ports are calculated relative to the data port. This is because
@@ -32,7 +34,7 @@
  *  @param com      The COM port to configure
  *  @param divisor  The divisor
  */
-void serial_configure_baud_rate(unsigned short com, unsigned short divisor);
+void serial_configure_baud_rate(uint16_t com, uint16_t divisor);
 
 /** serial_configure_line:
  *  Configures the line of the given serial port. The port is set to have a
@@ -41,7 +43,7 @@ void serial_configure_baud_rate(unsigned short com, unsigned short divisor);
  *
  *  @param com  The serial port to configure
  */
-void serial_configure_line(unsigned short com);
+void serial_configure_line(uint16_t com);
 
 /** serial_is_transmit_fifo_empty:
  *  Checks whether the transmit FIFO queue is empty or not for the given COM
@@ -51,7 +53,7 @@ void serial_configure_line(unsigned short com);
  *  @return 0 if the transmit FIFO queue is not empty
  *          1 if the transmit FIFO queue is empty
  */
-int serial_is_transmit_fifo_empty(unsigned int com);
+int32_t serial_is_transmit_fifo_empty(uint32_t com);
 
 /** serial_write:
  *  writes the contents of the buffer buf of length len to the serial port
@@ -59,6 +61,6 @@ int serial_is_transmit_fifo_empty(unsigned int com);
  *  @param buf The content to write
  *  @param len The length of the content
  */
-int serial_write(char *buf, unsigned int len);
+int32_t serial_write(char *buf, uint32_t len);
 
 #endif /* INCLUDE_FB_DRIVER_H */
