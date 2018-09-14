@@ -38,7 +38,7 @@ int32_t fb_scroll_lines(uint16_t n)
 
     for (i = content_len; i < total_len; ++i)
     {
-        fb_write_cell(i, '\0', FB_GREEN, FB_DARK_GREY);
+        fb_write_cell(i, '\0', FB_WHITE, FB_BLACK);
     }
     return 0;
 }
@@ -73,7 +73,7 @@ int32_t fb_write(char *buf, uint32_t len)
     {
         if (j < (FB_ROW_NUM * FB_COLOMN_NUM - 1))
         {
-            fb_write_cell(j, buf[i], FB_GREEN, FB_DARK_GREY);
+            fb_write_cell(j, buf[i], FB_WHITE, FB_BLACK);
             ++j;
             fb_move_cursor(j);
         }
@@ -82,7 +82,7 @@ int32_t fb_write(char *buf, uint32_t len)
             fb_scroll_lines(1);
             j -= FB_COLOMN_NUM;
             fb_move_cursor(j);
-            fb_write_cell(j, buf[i], FB_GREEN, FB_DARK_GREY);
+            fb_write_cell(j, buf[i], FB_WHITE, FB_BLACK);
             ++j;
             fb_move_cursor(j);
         }
