@@ -109,32 +109,37 @@ int32_t serial_is_transmit_fifo_empty(uint32_t com)
  *  @param buf The content to write
  *  @param len The length of the content
  */
-int32_t serial_write(char *buf, uint32_t len)
+void serial_write(char *buf, uint32_t len)
 {
-    uint32_t i, j;
+    uint32_t i;
     serial_configure_baud_rate(SERIAL_COM1_BASE, 2);
     serial_configure_line(SERIAL_COM1_BASE);
     serial_configure_buffers(SERIAL_COM1_BASE);
     serial_configure_modem(SERIAL_COM1_BASE);
 
-    /* spinning until transmit FIFO queue is empty */
-    while (!serial_is_transmit_fifo_empty(SERIAL_COM1_BASE));
-
-    for (i = 0, j = 0; i < len; ++i)
+    for (i = 0; i < len; ++i)
     {
-        /* j is send char counter, if j reach the size of the transmit FIFO queue 
-         * of given serial port, function spinning until transmit FIFO queue is empty.
-         */
-        while (j >= 14)
-        {
-            if (serial_is_transmit_fifo_empty(SERIAL_COM1_BASE))
-            {
-                j = 0;
-                break;
-            }
-        }
+        /* spinning until transmit FIFO queue is empty */
+        while (!serial_is_transmit_fifo_empty(SERIAL_COM1_BASE));
         outb(SERIAL_DATA_PORT(SERIAL_COM1_BASE), buf[i]);
-        ++j;
     }
-    return 0;
+}
+
+/** serial_write_hex - write number in hex to serial port
+ *
+ *  @param c unsigned int to write
+ */
+void serial_write_hex(uint32_t n)
+{
+    char output[10] = "0x00000000";
+    char hex[16] = "0123456789abcdef"; /* number to hex characters map */
+    uint8_t i;
+    
+    for (i = 0; i < 8; ++i)
+    {
+        output[9 - i] = hex[n & 0x0000000f];
+        n >>= 4;
+    }
+
+    serial_write(output, 10);
 }

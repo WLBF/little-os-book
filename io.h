@@ -19,4 +19,12 @@ void outb(uint16_t port, uint8_t data);
  */
 uint8_t inb(uint16_t port);
 
+/** inw:
+ *  Read 2 bytes from an I/O port.
+ *
+ *  @param  port The address of the I/O port
+ *  @return      The read bytes
+ */
+uint16_t inw(uint16_t port);
+
 #endif /* INCLUDE_IO_H */

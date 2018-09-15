@@ -58,6 +58,15 @@ int32_t fb_scroll_lines(uint16_t n);
  */
 void fb_move_cursor(uint16_t pos);
 
+/** fb_clear - clear whole framebuffer */
+void fb_clear();
+
+/** fb_put - put one character to framebuffer
+ *
+ *  @param c character to put
+ */
+void fb_put(char c);
+
 /** fb_write:
  *  writes the contents of the buffer buf of length len to the screen
  *  and automatically advance the cursor after a character has been 
@@ -66,6 +75,12 @@ void fb_move_cursor(uint16_t pos);
  *  @param buf The content to write
  *  @param len The length of the content
  */
-int32_t fb_write(char *buf, uint32_t len);
+void fb_write(char *buf, uint32_t len);
+
+/** fb_write_hex - write number in hex to framebuffer
+ *
+ *  @param c unsigned int to write
+ */
+void fb_write_hex(uint32_t n);
 
 #endif /* INCLUDE_FB_DRIVER_H */

@@ -21,5 +21,5 @@ gdt_flush:
 ;        [esp    ] the return address
 idt_flush:
     mov     eax, [esp+4]    ; load the address of the IDT into register eax
-    lidt    [eax]             ; load the IDT
+    lidt    [eax]           ; load the IDT
     ret                     ; return to the calling function

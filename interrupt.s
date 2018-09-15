@@ -1,6 +1,7 @@
 %macro no_error_code_interrupt_handler 1
 global interrupt_handler_%1
 interrupt_handler_%1:
+    cli                                 ; disable interrupts
     push    dword 0                     ; push 0 as error code
     push    dword %1                    ; push the interrupt number
     jmp     common_interrupt_handler    ; jump to the common handler
@@ -9,6 +10,7 @@ interrupt_handler_%1:
 %macro error_code_interrupt_handler 1
 global interrupt_handler_%1
 interrupt_handler_%1:
+    cli                                 ; disable interrupts
     push    dword %1                    ; push the interrupt number
     jmp     common_interrupt_handler    ; jump to the common handler
 %endmacro
@@ -17,31 +19,33 @@ extern interrupt_handler                ; define in interrupt_handler.h
 
 common_interrupt_handler:               ; the common parts of the generic interrupt handler
     ; save the registers
-    push    eax
-    push    ebx
-    push    ecx
-    push    edx
-    push    esi
-    push    edi
-    push    esp
-    push    ebp
+    pusha
+
+    mov ax, ds               ; Lower 16-bits of eax = ds.
+    push eax                 ; save the data segment descriptor
+
+    mov ax, 0x10  ; load the kernel data segment descriptor
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
 
     ; call the C function
     call    interrupt_handler
 
+    pop eax        ; reload the original data segment descriptor
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
     ; restore the registers
-    pop     ebp
-    pop     esp
-    pop     edi
-    pop     esi
-    pop     edx
-    pop     ecx
-    pop     ebx
-    pop     eax
+    popa
 
     ; restore the esp
     add     esp, 8
-
+    ; set interrupt enable bit
+    sti
     ; return to the code that got interrupted
     iret
 

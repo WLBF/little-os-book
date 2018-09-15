@@ -1,6 +1,11 @@
 #include "io.h"
 #include "fb_driver.h"
 
+/* framebuffer base address */
+uint16_t *fb = (uint16_t *)0x000B8000;
+/* cursor position */
+uint16_t cur_pos = 0;
+
 /** fb_write_cell:
  *  Writes a character with the given foreground and background to position i
  *  in the framebuffer.
@@ -12,9 +17,8 @@
  */
 void fb_write_cell(uint16_t i, char c, uint8_t fg, uint8_t bg)
 {
-    char *fb = (char *) 0x000B8000;
-    fb[2 * i] = c;
-    fb[2 * i + 1] = ((fg & 0x0F) << 4) | (bg & 0x0F);
+    uint8_t attr =  (bg << 4) | (fg & 0x0F);
+    fb[i] = attr << 8 | c;
 }
 
 /** fb_scroll_lines:
@@ -56,6 +60,36 @@ void fb_move_cursor(uint16_t pos)
     outb(FB_DATA_PORT,    pos & 0x00FF);
 }
 
+/** fb_clear - clear whole framebuffer */
+void fb_clear()
+{
+    fb_scroll_lines(FB_ROW_NUM);
+    fb_move_cursor(0);
+}
+
+/** fb_put - put one character to framebuffer
+ *
+ *  @param c character to put
+ */
+void fb_put(char c)
+{
+    if (cur_pos < (FB_ROW_NUM * FB_COLOMN_NUM - 1))
+    {
+        fb_write_cell(cur_pos, c, FB_WHITE, FB_BLACK);
+        ++cur_pos;
+        fb_move_cursor(cur_pos);
+    }
+    else
+    {
+        fb_scroll_lines(1);
+        cur_pos -= FB_COLOMN_NUM;
+        fb_move_cursor(cur_pos);
+        fb_write_cell(cur_pos, c, FB_WHITE, FB_BLACK);
+        ++cur_pos;
+        fb_move_cursor(cur_pos);
+    }
+}
+
 /** fb_write:
  *  writes the contents of the buffer buf of length len to the screen
  *  and automatically advance the cursor after a character has been 
@@ -64,28 +98,30 @@ void fb_move_cursor(uint16_t pos)
  *  @param buf The content to write
  *  @param len The length of the content
  */
-int32_t fb_write(char *buf, uint32_t len)
+void fb_write(char *buf, uint32_t len)
 {
-    uint16_t i, j;
-
-    fb_move_cursor(0);
-    for (i = 0, j = 0; i < len; ++i)
+    uint16_t i;
+    for (i = 0; i < len; ++i)
     {
-        if (j < (FB_ROW_NUM * FB_COLOMN_NUM - 1))
-        {
-            fb_write_cell(j, buf[i], FB_WHITE, FB_BLACK);
-            ++j;
-            fb_move_cursor(j);
-        }
-        else
-        {
-            fb_scroll_lines(1);
-            j -= FB_COLOMN_NUM;
-            fb_move_cursor(j);
-            fb_write_cell(j, buf[i], FB_WHITE, FB_BLACK);
-            ++j;
-            fb_move_cursor(j);
-        }
+        fb_put(buf[i]);
     }
-    return 0;
+}
+
+/** fb_write_hex - write number in hex to framebuffer
+ *
+ *  @param c unsigned int to write
+ */
+void fb_write_hex(uint32_t n)
+{
+    char output[10] = "0x00000000";
+    char hex[16] = "0123456789abcdef"; /* number to hex characters map */
+    uint8_t i;
+    
+    for (i = 0; i < 8; ++i)
+    {
+        output[9 - i] = hex[n & 0x0000000f];
+        n >>= 4;
+    }
+
+    fb_write(output, 10);
 }

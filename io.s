@@ -18,3 +18,11 @@ inb:
     mov dx, [esp + 4]       ; move the address of the I/O port to the dx register
     in  al, dx              ; read a byte from the I/O port and store it in the al register
     ret                     ; return the read byte
+
+; inw - returns 2 bytes from the given I/O port
+; stack: [esp + 4] The address of the I/O port
+;        [esp    ] The return address
+inw:
+    mov dx, [esp + 4]       ; move the address of the I/O port to the dx register
+    in  eax, dx              ; read a byte from the I/O port and store it in the al register
+    ret                     ; return the read bytes

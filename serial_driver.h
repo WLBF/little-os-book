@@ -61,6 +61,12 @@ int32_t serial_is_transmit_fifo_empty(uint32_t com);
  *  @param buf The content to write
  *  @param len The length of the content
  */
-int32_t serial_write(char *buf, uint32_t len);
+void serial_write(char *buf, uint32_t len);
+
+/** serial_write_hex - write number in hex to serial port
+ *
+ *  @param c unsigned int to write
+ */
+void serial_write_hex(uint32_t n);
 
 #endif /* INCLUDE_FB_DRIVER_H */

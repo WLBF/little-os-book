@@ -2,7 +2,6 @@
 #define INCLUDE_DESCRIPTOR_TABLES_H
 
 #include "common.h"
-#include "interrupt.h"
 
 /**
  * struct gdt_entry - Contains the value of one GDT entry.
