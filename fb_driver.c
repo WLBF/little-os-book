@@ -1,10 +1,15 @@
 #include "io.h"
 #include "fb_driver.h"
 
+
+#define CUR_POS (cur_x * FB_COLOMN_NUM + cur_y)
+
 /* framebuffer base address */
 uint16_t *fb = (uint16_t *)0x000B8000;
 /* cursor position */
-uint16_t cur_pos = 0;
+uint8_t cur_x = 0;
+uint8_t cur_y = 0;
+
 
 /** fb_write_cell:
  *  Writes a character with the given foreground and background to position i
@@ -73,21 +78,47 @@ void fb_clear()
  */
 void fb_put(char c)
 {
-    if (cur_pos < (FB_ROW_NUM * FB_COLOMN_NUM - 1))
+    if (c == 0x08 && cur_y)
     {
-        fb_write_cell(cur_pos, c, FB_WHITE, FB_BLACK);
-        ++cur_pos;
-        fb_move_cursor(cur_pos);
+        cur_y--;
     }
-    else
+    else if (c == 0x09)
+    {
+        cur_y = (cur_y+8) & ~(8-1);
+    }
+    else if (c == '\r')
+    {
+        cur_y = 0;
+    }
+    else if (c == '\n')
+    {
+        cur_y = 0;
+        cur_x++;
+    }
+    else if (c >= ' ')
+    {
+        if (cur_y >= 80 - 1 && cur_x >= 25 - 1)
+        {
+            fb_scroll_lines(1);
+            cur_x--;
+        }
+        fb_write_cell(CUR_POS, c, FB_WHITE, FB_BLACK);
+        cur_y++;
+    }
+
+    if (cur_y >= 80)
+    {
+        cur_y = 0;
+        cur_x++;
+    }
+
+    if (cur_x >= 25)
     {
         fb_scroll_lines(1);
-        cur_pos -= FB_COLOMN_NUM;
-        fb_move_cursor(cur_pos);
-        fb_write_cell(cur_pos, c, FB_WHITE, FB_BLACK);
-        ++cur_pos;
-        fb_move_cursor(cur_pos);
+        cur_x--;
     }
+
+    fb_move_cursor(CUR_POS);
 }
 
 /** fb_write:
