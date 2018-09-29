@@ -98,4 +98,21 @@ extern void interrupt_handler_29();
 extern void interrupt_handler_30();
 extern void interrupt_handler_31();
 
+extern void interrupt_request_handler_0();
+extern void interrupt_request_handler_1();
+extern void interrupt_request_handler_2();
+extern void interrupt_request_handler_3();
+extern void interrupt_request_handler_4();
+extern void interrupt_request_handler_5();
+extern void interrupt_request_handler_6();
+extern void interrupt_request_handler_7();
+extern void interrupt_request_handler_8();
+extern void interrupt_request_handler_9();
+extern void interrupt_request_handler_10();
+extern void interrupt_request_handler_11();
+extern void interrupt_request_handler_12();
+extern void interrupt_request_handler_13();
+extern void interrupt_request_handler_14();
+extern void interrupt_request_handler_15();
+
 #endif /* INCLUDE_DESCRIPTOR_TABLES_H */
