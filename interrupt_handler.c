@@ -1,24 +1,15 @@
 #include "io.h"
 #include "fb_driver.h"
 #include "serial_driver.h"
+#include "interrupt_handler.h"
 
-#define PIC1_PORT_A 0x20
-#define PIC2_PORT_A 0xA0
 
-/* The PIC interrupts have been remapped */
-#define PIC1_START_INTERRUPT 0x20
-#define PIC2_START_INTERRUPT 0x28
-#define PIC2_END_INTERRUPT   PIC2_START_INTERRUPT + 7
+isr_t interrupt_handlers[256];
 
-#define PIC_ACK     0x20
-
-struct registers
+void register_interrupt_handler(uint8_t n, isr_t handler)
 {
-   uint32_t ds;
-   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-   uint32_t int_no, err_code;
-   uint32_t eip, cs, eflags, useresp, ss;
-};
+  interrupt_handlers[n] = handler;
+}
 
 /** pic_acknowledge:
  *  Acknowledges an interrupt from either PIC 1 or PIC 2.
@@ -38,18 +29,17 @@ void pic_acknowledge(uint32_t int_no)
     outb(PIC1_PORT_A, PIC_ACK);
 }
 
-void interrupt_handler(struct registers regs)
+void isr_common_handler(struct registers regs)
 {
-    fb_write("interrupt\n", 10);
-    fb_write_hex(regs.int_no);
-    fb_write("\n", 1);
-    fb_write_hex(regs.err_code);
-    fb_write("\n", 1);
+    if (interrupt_handlers[regs.int_no] != 0)
+    {
+        isr_t handler = interrupt_handlers[regs.int_no];
+        handler(regs);
+    }
 }
 
-void interrupt_request_handler(struct registers regs)
+void irq_common_handler(struct registers regs)
 {
-    fb_write("interrupt\n", 10);
     pic_acknowledge(regs.int_no);
-    interrupt_handler(regs);
+    isr_common_handler(regs);
 }
